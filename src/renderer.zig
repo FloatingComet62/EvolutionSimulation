@@ -2,6 +2,7 @@ const std = @import("std");
 pub const rl = @import("raylib");
 
 pub const TargetRenderer = RaylibRenderer;
+
 pub const Color = struct {
     r: u8,
     g: u8,
@@ -37,19 +38,15 @@ pub const Renderer = struct {
     pub fn deinit(self: *Self) void {
         self.deinitFn(self.ptr);
     }
-
     pub fn keepAlive(self: *Self) bool {
         return self.keepAliveFn(self.ptr);
     }
-
     pub fn beginDrawing(self: *Self) void {
         self.beginDrawingFn(self.ptr);
     }
-
     pub fn endDrawing(self: *Self) void {
         self.endDrawingFn(self.ptr);
     }
-
     pub fn drawCircle(self: *Self, x: i32, y: i32, radius: f32, color: Color) void {
         self.drawCircleFn(self.ptr, x, y, radius, color);
     }
