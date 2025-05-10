@@ -2,7 +2,12 @@ const std = @import("std");
 const renderers = @import("renderer.zig");
 
 fn drawPoint(renderer: *renderers.Renderer, x: i32, y: i32) void {
-    renderer.drawCircle(x, y, 5.0, renderers.Color.init(255, 0, 0, 255));
+    renderer.drawCircle(
+        x,
+        y,
+        5.0,
+        renderers.Color.fromHex(0xFF00FFFF),
+    );
 }
 
 pub fn main() !void {

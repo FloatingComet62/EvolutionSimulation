@@ -10,6 +10,15 @@ pub const Color = struct {
     pub fn init(r: u8, g: u8, b: u8, a: u8) Color {
         return Color{ .r = r, .g = g, .b = b, .a = a };
     }
+    pub fn fromHex(hex: u32) Color {
+        // 0xRRGGBBAA
+        return Color{
+            .r = @intCast((hex >> 24) & 0xFF),
+            .g = @intCast((hex >> 16) & 0xFF),
+            .b = @intCast((hex >> 8) & 0xFF),
+            .a = @intCast(hex & 0xFF),
+        };
+    }
 };
 
 pub const Renderer = struct {
