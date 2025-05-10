@@ -2,6 +2,12 @@ const std = @import("std");
 pub const rl = @import("raylib");
 
 pub const TargetRenderer = RaylibRenderer;
+pub const Color = struct {
+    r: u8,
+    g: u8,
+    b: u8,
+    a: u8,
+};
 
 pub const Renderer = struct {
     const Self = @This();
@@ -11,8 +17,7 @@ pub const Renderer = struct {
     keepAliveFn: *const fn (ptr: *anyopaque) bool,
     beginDrawingFn: *const fn (ptr: *anyopaque) void,
     endDrawingFn: *const fn (ptr: *anyopaque) void,
-    drawCircleFn: *const fn (ptr: *anyopaque, x: i32, y: i32, radius: f32, color: rl.Color) void,
-    colorFromRGBAFn: *const fn (r: u8, g: u8, b: u8, a: u8) rl.Color,
+    drawCircleFn: *const fn (ptr: *anyopaque, x: i32, y: i32, radius: f32, color: Color) void,
 
     pub fn init(self: *Self) void {
         self.initFn(self.ptr);
@@ -33,11 +38,7 @@ pub const Renderer = struct {
         self.endDrawingFn(self.ptr);
     }
 
-    pub fn colorFromRGBA(self: *Self, r: u8, g: u8, b: u8, a: u8) rl.Color {
-        return self.colorFromRGBAFn(r, g, b, a);
-    }
-
-    pub fn drawCircle(self: *Self, x: i32, y: i32, radius: f32, color: rl.Color) void {
+    pub fn drawCircle(self: *Self, x: i32, y: i32, radius: f32, color: Color) void {
         self.drawCircleFn(self.ptr, x, y, radius, color);
     }
 };
@@ -78,8 +79,14 @@ pub const RaylibRenderer = struct {
         rl.setMouseCursor(rl.MouseCursor.default);
     }
 
-    pub fn drawCircle(_: *anyopaque, x: i32, y: i32, radius: f32, color: rl.Color) void {
-        rl.drawCircle(x, y, radius, color);
+    pub fn drawCircle(_: *anyopaque, x: i32, y: i32, radius: f32, color: Color) void {
+        const c = rl.Color{
+            .r = color.r,
+            .g = color.g,
+            .b = color.b,
+            .a = color.a,
+        };
+        rl.drawCircle(x, y, radius, c);
     }
 
     pub fn renderer(self: *Self) Renderer {
@@ -91,7 +98,6 @@ pub const RaylibRenderer = struct {
             .beginDrawingFn = beginDrawing,
             .endDrawingFn = endDrawing,
             .drawCircleFn = drawCircle,
-            .colorFromRGBAFn = rl.Color.init,
         };
     }
 };
