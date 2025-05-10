@@ -45,7 +45,6 @@ pub const Simulation = struct {
     pub fn update(self: *Self) void {
         for (0..self.entities.items.len) |i| {
             const entity = &self.entities.items[i];
-            std.debug.print("{}\n", .{@as(i32, @intCast(self.prng.random().int(u32) % 6)) - 3});
             entity.x += @as(i32, @intCast(self.prng.random().int(u32) % 7)) - 3;
             entity.y += @as(i32, @intCast(self.prng.random().int(u32) % 7)) - 3;
         }
