@@ -1,8 +1,9 @@
 const std = @import("std");
 const renderers = @import("renderer.zig");
 
-const WIDTH: usize = 1280;
-const HEIGHT: usize = 800;
+fn drawPoint(renderer: *renderers.Renderer, x: i32, y: i32) void {
+    renderer.drawCircle(x, y, 5.0, renderer.colorFromRGBA(255, 0, 0, 255));
+}
 
 pub fn main() !void {
     const stdout = std.io.getStdOut().writer();
@@ -28,6 +29,10 @@ pub fn main() !void {
         frame += 1;
         renderer.beginDrawing();
         defer renderer.endDrawing();
-        renderer.drawCircle(100, 100, 5.0, renderer.colorFromRGBA(255, 0, 0, 255));
+        for (0..100) |_| {
+            const x = prng.random().int(u32) % 800 + 200;
+            const y = prng.random().int(u32) % 600 + 100;
+            drawPoint(&renderer, @intCast(x), @intCast(y));
+        }
     }
 }
