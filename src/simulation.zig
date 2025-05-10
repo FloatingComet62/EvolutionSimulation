@@ -6,7 +6,7 @@ pub const Entity = struct {
     y: i32,
 
     pub fn new(id: u32, x: i32, y: i32) Entity {
-        return Entity{
+        return .{
             .id = id,
             .x = x,
             .y = y,
@@ -36,12 +36,15 @@ pub const Simulation = struct {
         try self.entities.append(entity);
         self.next_id += 1;
     }
-
     pub fn remove_entity(self: *Self, id: u32) !void {
-        const index = try self.entities.indexOf(Entity.new(id, 0, 0));
-        try self.entities.removeAt(index);
+        for (0..self.entities.items.len) |i| {
+            if (self.entities.items[i].id != id) {
+                continue;
+            }
+            try self.entities.swapRemove(i);
+            return;
+        }
     }
-
     pub fn update(self: *Self) void {
         for (0..self.entities.items.len) |i| {
             const entity = &self.entities.items[i];
