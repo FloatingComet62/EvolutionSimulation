@@ -2,10 +2,10 @@ const std = @import("std");
 
 pub const Entity = struct {
     id: u32,
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
 
-    pub fn new(id: u32, x: u32, y: u32) Entity {
+    pub fn new(id: u32, x: i32, y: i32) Entity {
         return Entity{
             .id = id,
             .x = x,
@@ -31,7 +31,7 @@ pub const Simulation = struct {
         self.entities.deinit();
     }
 
-    pub fn add_entity(self: *Self, x: u32, y: u32) !void {
+    pub fn add_entity(self: *Self, x: i32, y: i32) !void {
         const entity = Entity.new(self.next_id, x, y);
         try self.entities.append(entity);
         self.next_id += 1;
@@ -45,19 +45,9 @@ pub const Simulation = struct {
     pub fn update(self: *Self) void {
         for (0..self.entities.items.len) |i| {
             const entity = &self.entities.items[i];
-            const x_offset = self.prng.random().int(u32) % 3;
-            const y_offset = self.prng.random().int(u32) % 3;
-            if (self.prng.random().boolean()) {
-                entity.x += x_offset;
-            } else if (entity.x > x_offset) {
-                entity.x -= x_offset;
-            }
-
-            if (self.prng.random().boolean()) {
-                entity.y += y_offset;
-            } else if (entity.y > y_offset) {
-                entity.y -= y_offset;
-            }
+            std.debug.print("{}\n", .{@as(i32, @intCast(self.prng.random().int(u32) % 6)) - 3});
+            entity.x += @as(i32, @intCast(self.prng.random().int(u32) % 7)) - 3;
+            entity.y += @as(i32, @intCast(self.prng.random().int(u32) % 7)) - 3;
         }
     }
 };

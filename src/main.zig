@@ -33,9 +33,9 @@ pub fn main() !void {
     defer simulation.deinit();
 
     for (0..1000) |_| {
-        const x = prng.random().int(u32) % 800 + 200;
-        const y = prng.random().int(u32) % 600 + 100;
-        try simulation.add_entity(@intCast(x), @intCast(y));
+        const x: i32 = @intCast(prng.random().int(u32) % 1000 + 100);
+        const y: i32 = @intCast(prng.random().int(u32) % 600 + 100);
+        try simulation.add_entity(x, y);
     }
 
     var frame: u32 = 0;
@@ -47,7 +47,7 @@ pub fn main() !void {
         renderer.beginDrawing();
         defer renderer.endDrawing();
         for (simulation.entities.items) |entity| {
-            drawPoint(&renderer, @intCast(entity.x), @intCast(entity.y));
+            drawPoint(&renderer, entity.x, entity.y);
         }
     }
 }
