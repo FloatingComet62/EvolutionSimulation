@@ -7,6 +7,9 @@ pub const Color = struct {
     g: u8,
     b: u8,
     a: u8,
+    pub fn init(r: u8, g: u8, b: u8, a: u8) Color {
+        return Color{ .r = r, .g = g, .b = b, .a = a };
+    }
 };
 
 pub const Renderer = struct {
@@ -46,9 +49,23 @@ pub const Renderer = struct {
 pub const RaylibRenderer = struct {
     const Self = @This();
 
+    // Implement these for custom renderer, and then change the TargetRenderer global variable
     pub fn init() Self {
         return .{};
     }
+    pub fn renderer(self: *Self) Renderer {
+        return .{
+            .ptr = self,
+            .initFn = renderer_init,
+            .deinitFn = renderer_deinit,
+            .keepAliveFn = keepAlive,
+            .beginDrawingFn = beginDrawing,
+            .endDrawingFn = endDrawing,
+            .drawCircleFn = drawCircle,
+        };
+    }
+    // ---------------------------
+
     pub fn renderer_init(_: *anyopaque) void {
         rl.setConfigFlags(rl.ConfigFlags{ .vsync_hint = true });
         rl.initWindow(1200, 800, "Evolution");
@@ -68,17 +85,14 @@ pub const RaylibRenderer = struct {
         std.debug.assert(rl.isWindowReady());
         return !rl.windowShouldClose();
     }
-
     pub fn beginDrawing(_: *anyopaque) void {
         rl.beginDrawing();
         rl.clearBackground(rl.Color.black);
     }
-
     pub fn endDrawing(_: *anyopaque) void {
         rl.endDrawing();
         rl.setMouseCursor(rl.MouseCursor.default);
     }
-
     pub fn drawCircle(_: *anyopaque, x: i32, y: i32, radius: f32, color: Color) void {
         const c = rl.Color{
             .r = color.r,
@@ -87,17 +101,5 @@ pub const RaylibRenderer = struct {
             .a = color.a,
         };
         rl.drawCircle(x, y, radius, c);
-    }
-
-    pub fn renderer(self: *Self) Renderer {
-        return .{
-            .ptr = self,
-            .initFn = renderer_init,
-            .deinitFn = renderer_deinit,
-            .keepAliveFn = keepAlive,
-            .beginDrawingFn = beginDrawing,
-            .endDrawingFn = endDrawing,
-            .drawCircleFn = drawCircle,
-        };
     }
 };
