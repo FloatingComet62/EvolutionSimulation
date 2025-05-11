@@ -32,22 +32,22 @@ pub const Renderer = struct {
     endDrawingFn: *const fn (ptr: *anyopaque) void,
     drawCircleFn: *const fn (ptr: *anyopaque, x: i32, y: i32, radius: f32, color: Color) void,
 
-    pub fn init(self: *Self) void {
+    pub fn init(self: *const Self) void {
         self.initFn(self.ptr);
     }
-    pub fn deinit(self: *Self) void {
+    pub fn deinit(self: *const Self) void {
         self.deinitFn(self.ptr);
     }
-    pub fn keepAlive(self: *Self) bool {
+    pub fn keepAlive(self: *const Self) bool {
         return self.keepAliveFn(self.ptr);
     }
-    pub fn beginDrawing(self: *Self) void {
+    pub fn beginDrawing(self: *const Self) void {
         self.beginDrawingFn(self.ptr);
     }
-    pub fn endDrawing(self: *Self) void {
+    pub fn endDrawing(self: *const Self) void {
         self.endDrawingFn(self.ptr);
     }
-    pub fn drawCircle(self: *Self, x: i32, y: i32, radius: f32, color: Color) void {
+    pub fn drawCircle(self: *const Self, x: i32, y: i32, radius: f32, color: Color) void {
         self.drawCircleFn(self.ptr, x, y, radius, color);
     }
 };
@@ -72,7 +72,7 @@ pub const RaylibRenderer = struct {
     }
     // ---------------------------
 
-    pub fn renderer_init(_: *anyopaque) void {
+    pub fn renderer_init(_: *const anyopaque) void {
         rl.setConfigFlags(rl.ConfigFlags{ .vsync_hint = true });
         rl.initWindow(1200, 800, "Evolution");
         const windowIcon = rl.loadImage("favicon.png");
@@ -83,23 +83,23 @@ pub const RaylibRenderer = struct {
             std.debug.print("Failed to load window icon {}\n", .{err});
         }
     }
-    pub fn renderer_deinit(_: *anyopaque) void {
+    pub fn renderer_deinit(_: *const anyopaque) void {
         rl.closeWindow();
     }
 
-    pub fn keepAlive(_: *anyopaque) bool {
+    pub fn keepAlive(_: *const anyopaque) bool {
         std.debug.assert(rl.isWindowReady());
         return !rl.windowShouldClose();
     }
-    pub fn beginDrawing(_: *anyopaque) void {
+    pub fn beginDrawing(_: *const anyopaque) void {
         rl.beginDrawing();
         rl.clearBackground(rl.Color.black);
     }
-    pub fn endDrawing(_: *anyopaque) void {
+    pub fn endDrawing(_: *const anyopaque) void {
         rl.endDrawing();
         rl.setMouseCursor(rl.MouseCursor.default);
     }
-    pub fn drawCircle(_: *anyopaque, x: i32, y: i32, radius: f32, color: Color) void {
+    pub fn drawCircle(_: *const anyopaque, x: i32, y: i32, radius: f32, color: Color) void {
         const c = rl.Color{
             .r = color.r,
             .g = color.g,

@@ -1,9 +1,25 @@
 const std = @import("std");
 
+pub fn mate(
+    parent1: *const Entity,
+    parent2: *const Entity,
+) Entity {
+    const child = Entity.new(0, 600, 400);
+    for (0..child.genes.len) |i| {
+        if (i > child.genes.len / 2) {
+            child.genes[i] = parent1.genes[i];
+        } else {
+            child.genes[i] = parent2.genes[i];
+        }
+    }
+    return child;
+}
+
 pub const Entity = struct {
     id: u32,
     x: i32,
     y: i32,
+    genes: [100]f64,
 
     pub fn new(id: u32, x: i32, y: i32) Entity {
         return .{
