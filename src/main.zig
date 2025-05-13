@@ -1,14 +1,21 @@
 const std = @import("std");
 const renderers = @import("renderer.zig");
 const sim = @import("simulation.zig");
+const SimulationError = sim.SimulationError;
 
-fn drawPoint(renderer: *renderers.Renderer, x: i32, y: i32) void {
-    renderer.drawCircle(
-        x,
-        y,
-        5.0,
-        renderers.Color.fromHex(0xFF00FFFF),
-    );
+pub fn handleError(err: anyerror) void {
+    switch (err) {
+        SimulationError.TooManyEntities => {
+            std.debug.print("Too many entities\n", .{});
+        },
+        SimulationError.TooLittleEntities => {
+            std.debug.print("Too little entities\n", .{});
+        },
+        SimulationError.OutOfMemory => {
+            std.debug.print("Out of memory\n", .{});
+        },
+        else => unreachable,
+    }
 }
 
 pub fn main() !void {
@@ -22,6 +29,9 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator: std.mem.Allocator = gpa.allocator();
 
+    var gene_allocator = std.heap.ArenaAllocator.init(allocator);
+    defer gene_allocator.deinit();
+
     try stdout.print("Test rand float: {}\n", .{prng.random().float(f64)});
 
     var target_renderer = renderers.TargetRenderer.init();
@@ -29,25 +39,35 @@ pub fn main() !void {
     renderer.init();
     defer renderer.deinit();
 
-    var simulation = sim.Simulation.init(allocator, &prng);
+    var simulation = sim.Simulation.init(
+        allocator,
+        gene_allocator.allocator(),
+        &prng,
+        sim.SimulationConfig.default(),
+    ) catch |err| {
+        handleError(err);
+        return;
+    };
     defer simulation.deinit();
 
-    for (0..1000) |_| {
+    for (0..100) |_| {
         const x: i32 = @intCast(prng.random().int(u32) % 1000 + 100);
         const y: i32 = @intCast(prng.random().int(u32) % 600 + 100);
-        try simulation.add_entity(x, y);
+        _ = simulation.add_entity(x, y, true) catch |err| {
+            handleError(err);
+            continue;
+        };
     }
 
     var frame: u32 = 0;
 
     while (renderer.keepAlive()) {
         frame += 1;
-        simulation.update();
-
+        simulation.update(frame) catch |err| handleError(err);
         renderer.beginDrawing();
         defer renderer.endDrawing();
         for (simulation.entities.items) |entity| {
-            drawPoint(&renderer, entity.x, entity.y);
+            entity.drawPoint(&renderer);
         }
     }
 }

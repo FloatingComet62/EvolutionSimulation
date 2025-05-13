@@ -7,7 +7,8 @@ mistakes that occur. E.g. a gene offset which causes a malformed individual.
 
 Gene of an entity is just an array of numbers and at random intervals, there is a small deviation in the value, either positive or negative.
 
-Higher deviation of a gene from the mean represents defects, and a higher chance of dying.
+LOWER deviation of a gene from the mean represents defects, and a higher chance of dying.
+Why Lower? Imagine inbreeding.
 Also a small random chance of dying in general.
 
 ## Reproduction
